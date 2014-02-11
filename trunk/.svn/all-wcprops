@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/repo/!svn/ver/2068/getdate/trunk
+END
+getdate.tab.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/repo/!svn/ver/2069/getdate/trunk/getdate.tab.c
+END
+getdate.py
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/repo/!svn/ver/2069/getdate/trunk/getdate.py
+END
+getdate.y
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/repo/!svn/ver/2548/getdate/trunk/getdate.y
+END
+setup.py
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/repo/!svn/ver/2112/getdate/trunk/setup.py
+END
+MANIFEST.in
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/repo/!svn/ver/2111/getdate/trunk/MANIFEST.in
+END
+xtime.h
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/repo/!svn/ver/2069/getdate/trunk/xtime.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/repo/!svn/ver/2110/getdate/trunk/Makefile
+END
+getdate.c
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/repo/!svn/ver/2069/getdate/trunk/getdate.c
+END

@@ -1,0 +1,2 @@
+include getdate.y
+include Makefile
