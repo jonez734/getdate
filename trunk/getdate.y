@@ -86,10 +86,16 @@ extern struct tm	*localtime();
 #define yyparse getdate_yyparse
 #define yylex getdate_yylex
 #define yyerror getdate_yyerror
+// #define yyprint getdate_yyprint
+
+#define YYDEBUG 1
 
 static int yyparse ();
 static int yylex ();
 static int yyerror ();
+// static void yyprint ();
+
+extern int yydebug;
 
 #define EPOCH		1970
 #define HOUR(x)		((time_t)(x) * 60)
@@ -156,6 +162,7 @@ static time_t	yyRelSeconds;
 
 %token	tAGO tDAY tDAYZONE tID tMERIDIAN tMINUTE_UNIT tMONTH tMONTH_UNIT
 %token	tSEC_UNIT tSNUMBER tUNUMBER tZONE tDST
+%token  tORDINAL
 
 %type	<Number>	tDAY tDAYZONE tMINUTE_UNIT tMONTH tMONTH_UNIT
 %type	<Number>	tSEC_UNIT tSNUMBER tUNUMBER tZONE
@@ -187,16 +194,18 @@ item	: time {
 	    yyHaveDate++;
 	    yyHaveZone++;
 	}
-	| ordinalday {
-  }
+	| ordinaldate {
+	    printf("ordinal date detected\n");
+	    yyHaveDate++;
+	}
 	| number
 	;
 
-ordinalday: tSNUMBER tDAY tMONTH tSNUMBER {
+ordinaldate: tORDINAL tDAY tMONTH tSNUMBER {
   yyYear = $4;
   yyMonth = $3;
   yyDay = 1;
-  
+  yyHaveDate++;
 }
 ;
 
@@ -281,6 +290,7 @@ date	: tUNUMBER '/' tUNUMBER {
 	    yyMonth = $1;
 	    yyDay = $3;
 	}
+
 	| tUNUMBER '/' tUNUMBER '/' tUNUMBER {
 	    if ($1 >= 100) {
 		yyYear = $1;
@@ -479,6 +489,19 @@ static TABLE const OtherTable[] = {
     { "2nd", tUNUMBER, 2 },
     { "3rd", tUNUMBER, 3 },
     { "4th", tUNUMBER, 4 },
+    { NULL }
+};
+
+static TABLE const OrdinalTable[] = {
+    { "first",		tUNUMBER,	1 },
+/*  { "second",		tUNUMBER,	2 }, */
+    { "third",		tUNUMBER,	3 },
+    { "fourth",		tUNUMBER,	4 },
+    { "1st",		tUNUMBER, 	1 },
+    { "2nd",		tUNUMBER,	2 },
+    { "3rd", 		tUNUMBER,	3 },
+    { "4th", 		tUNUMBER,	4 },
+    
     { NULL }
 };
 
@@ -835,6 +858,14 @@ LookupWord(buff)
 	    return tp->type;
 	}
 
+    for (tp = OrdinalTable; tp->name; tp++)
+    {
+        if (strcmp(buff, tp->name) == 0) {
+            yylval.Number = tp->value;
+            return tp->type;
+        }
+    }
+
     /* Military timezones. */
     if (buff[1] == '\0' && isalpha(*buff)) {
 	for (tp = MilitaryTable; tp->name; tp++)
@@ -948,6 +979,8 @@ get_date(p, now)
     time_t		Start;
     time_t		tod;
     time_t nowtime;
+
+    yydebug = 1;
 
     yyInput = p;
     if (now == NULL) {
