@@ -1,7 +1,8 @@
 %{
 
-#include "getdate.tab.h"
 #include <stdio.h>
+#include "getdate.h"
+#include "getdate.tab.h"
 
 %}
 
@@ -18,15 +19,17 @@ DIGIT [0-9]
 3rd		|
 4th 		{
                   printf("ordinal: %s\n", yytext);
+                  return tORDINAL;
                 }
-mon		|
-tue		|
-wed		|
-thu		|
-fri		|
-sat		|
-sun		{
+mon|monday	|
+tue|tuesday	|
+wed|wednesday	|
+thu|thursday	|
+fri|friday	|
+sat|saturday	|
+sun|sunday	{
                   printf("day name: %s\n", yytext);
+                  return tDAY;
                 }
 
 jan|january		|
@@ -42,16 +45,19 @@ oct|october		|
 nov|november		|
 dec|december		{
                   printf("month name: %s\n", yytext);
+                  return tMONTH;
                 }
 
 [0-9]{4}	{
-                  printf("year: %d\n", atoi(yytext));
+                  ECHO; /* printf("year: %d\n", atoi(yytext)); */
+                  return tUNUMBER;
                 }
 %%
 
 int main(int argc, char **argv)
 {
-  ++argv, --argc;  /* skip over program name */
+  printf("foo!\n");
+  ++argv, --argc;  // skip over program name 
   if ( argc > 0 )
     yyin = fopen( argv[0], "r" );
   else
@@ -61,4 +67,3 @@ int main(int argc, char **argv)
   return 0;
   
 }
-
