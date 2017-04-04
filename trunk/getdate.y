@@ -1,3 +1,6 @@
+%define api.pure full
+%name-prefix "getdate_yy"
+
 %{
 /*
 **  Originally written by Steven M. Bellovin <smb@research.att.com> while
@@ -29,43 +32,51 @@
    wouldn't do any harm to #undef it here; this will only cause
    problems if we try to write to a static variable, which I don't
    think this code needs to do.  */
-#ifdef emacs
-#undef static
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 /* The code at the top of get_date which figures out the offset of the
    current time zone checks various CPP symbols to see if special
    tricks are need, but defaults to using the gettimeofday system call.
    Include <sys/time.h> if that will be used.  */
 
-#if	defined(vms)
-# include <types.h>
-#else /* defined(vms) */
-# include <sys/types.h>
-#endif	/* !defined(vms) */
-/* # include "xtime.h" */ 
-#include <time.h>
-#include <sys/timeb.h>
+%code requires {
+    #include <sys/types.h>
+    #include <sys/timeb.h>
 
-#if defined (STDC_HEADERS) || defined (USG)
-#include <string.h>
-#endif
 
-/* Some old versions of bison generate parsers that use bcopy.
-   That loses on systems that don't provide the function, so we have
-   to redefine it here.  */
-#if !defined (HAVE_BCOPY) && defined (HAVE_MEMCPY) && !defined (bcopy)
-#define bcopy(from, to, len) memcpy ((to), (from), (len))
-#endif
+    #include <string.h>
 
-#if defined (STDC_HEADERS)
-#include <stdlib.h>
-#endif
+    #include <stdlib.h>
+
+    /*
+    **  Daylight-savings mode:  on, off, or not yet known.
+    */
+    typedef enum _DSTMODE {
+        DSTon, DSToff, DSTmaybe
+    } DSTMODE;
+
+    /*
+    **  Meridian:  am, pm, or 24-hour style.
+    */
+    typedef enum _MERIDIAN {
+        MERam, MERpm, MER24
+    } MERIDIAN;
+
+}
+
+%code provides {
+    int getdate_yylex (YYSTYPE *yylval);
+    time_t get_date(char *, struct timeb *);
+}
+
+%expect 10
+
+// #include "getdate.h"
 
 /* NOTES on rebuilding getdate.c (particularly for inclusion in CVS
    releases):
@@ -80,18 +91,18 @@
    unportable getdate.c's), but that seems to cause as many problems
    as it solves.  */
 
-extern struct tm	*gmtime();
-extern struct tm	*localtime();
+// extern struct tm	*gmtime();
+// extern struct tm	*localtime();
 
-#define yyparse getdate_yyparse
-#define yylex getdate_yylex
-#define yyerror getdate_yyerror
+//#define yyparse getdate_yyparse
+//#define yylex getdate_yylex
+//#define yyerror getdate_yyerror
 // #define yyprint getdate_yyprint
 
 #define YYDEBUG 1
 
 static int yyparse ();
-static int yylex ();
+// static int yylex ();
 static int yyerror ();
 // static void yyprint ();
 
@@ -101,32 +112,34 @@ extern int yydebug;
 #define HOUR(x)		((time_t)(x) * 60)
 #define SECSPERDAY	(24L * 60L * 60L)
 
-
 /*
 **  An entry in the lexical lookup table.
 */
+/* moved to getdate.h
 typedef struct _TABLE {
     char	*name;
     int		type;
     time_t	value;
 } TABLE;
-
+*/
 
 /*
 **  Daylight-savings mode:  on, off, or not yet known.
 */
+/* moved to getdate.h 
 typedef enum _DSTMODE {
     DSTon, DSToff, DSTmaybe
 } DSTMODE;
+*/
 
 /*
 **  Meridian:  am, pm, or 24-hour style.
 */
-typedef enum _MERIDIAN {
-    MERam, MERpm, MER24
-} MERIDIAN;
-
-
+/* moved to getdate.h
+	typedef enum _MERIDIAN {
+	    MERam, MERpm, MER24
+	} MERIDIAN;
+*/
 /*
 **  Global variables.  We could get rid of most of these by using a good
 **  union as the yacc stack.  (This routine was originally written before
@@ -142,6 +155,7 @@ static int	yyHaveDay;
 static int	yyHaveRel;
 static int	yyHaveTime;
 static int	yyHaveZone;
+static int	yyOrdinal;
 static time_t	yyTimezone;
 static time_t	yyDay;
 static time_t	yyHour;
@@ -149,7 +163,7 @@ static time_t	yyMinutes;
 static time_t	yyMonth;
 static time_t	yySeconds;
 static time_t	yyYear;
-static MERIDIAN	yyMeridian;
+static MERIDIAN yyMeridian;
 static time_t	yyRelMonth;
 static time_t	yyRelSeconds;
 
@@ -164,10 +178,9 @@ static time_t	yyRelSeconds;
 %token	tSEC_UNIT tSNUMBER tUNUMBER tZONE tDST
 %token  tORDINAL
 
-%type	<Number>	tDAY tDAYZONE tMINUTE_UNIT tMONTH tMONTH_UNIT
+%type	<Number>	tDAY tDAYZONE tMINUTE_UNIT tMONTH tMONTH_UNIT tORDINAL
 %type	<Number>	tSEC_UNIT tSNUMBER tUNUMBER tZONE
 %type	<Meridian>	tMERIDIAN o_merid
-
 %%
 
 spec	: /* NULL */
@@ -201,10 +214,12 @@ item	: time {
 	| number
 	;
 
-ordinaldate: tORDINAL tDAY tMONTH tSNUMBER {
+ordinaldate: tORDINAL tDAY tMONTH tUNUMBER {
   yyYear = $4;
   yyMonth = $3;
-  yyDay = 1;
+  yyDay = $2;
+  yyOrdinal = $1;
+  /* calculate here */
   yyHaveDate++;
 }
 ;
@@ -485,16 +500,17 @@ static TABLE const OtherTable[] = {
     { "eleventh",	tUNUMBER,	11 },
     { "twelfth",	tUNUMBER,	12 },
     { "ago",		tAGO,	1 },
+/*
     { "1st", tUNUMBER, 1 },
     { "2nd", tUNUMBER, 2 },
     { "3rd", tUNUMBER, 3 },
     { "4th", tUNUMBER, 4 },
+*/
     { NULL }
 };
 
 static TABLE const OrdinalTable[] = {
     { "first",		tUNUMBER,	1 },
-/*  { "second",		tUNUMBER,	2 }, */
     { "third",		tUNUMBER,	3 },
     { "fourth",		tUNUMBER,	4 },
     { "1st",		tUNUMBER, 	1 },
@@ -778,172 +794,9 @@ RelativeMonth(Start, RelMonth)
 }
 
 
-static int
-LookupWord(buff)
-    char		*buff;
-{
-    register char	*p;
-    register char	*q;
-    register const TABLE	*tp;
-    int			i;
-    int			abbrev;
-
-    /* Make it lowercase. */
-    for (p = buff; *p; p++)
-	if (isupper(*p))
-	    *p = tolower(*p);
-
-    if (strcmp(buff, "am") == 0 || strcmp(buff, "a.m.") == 0) {
-	yylval.Meridian = MERam;
-	return tMERIDIAN;
-    }
-    if (strcmp(buff, "pm") == 0 || strcmp(buff, "p.m.") == 0) {
-	yylval.Meridian = MERpm;
-	return tMERIDIAN;
-    }
-
-    /* See if we have an abbreviation for a month. */
-    if (strlen(buff) == 3)
-	abbrev = 1;
-    else if (strlen(buff) == 4 && buff[3] == '.') {
-	abbrev = 1;
-	buff[3] = '\0';
-    }
-    else
-	abbrev = 0;
-
-    for (tp = MonthDayTable; tp->name; tp++) {
-	if (abbrev) {
-	    if (strncmp(buff, tp->name, 3) == 0) {
-		yylval.Number = tp->value;
-		return tp->type;
-	    }
-	}
-	else if (strcmp(buff, tp->name) == 0) {
-	    yylval.Number = tp->value;
-	    return tp->type;
-	}
-    }
-
-    for (tp = TimezoneTable; tp->name; tp++)
-	if (strcmp(buff, tp->name) == 0) {
-	    yylval.Number = tp->value;
-	    return tp->type;
-	}
-
-    if (strcmp(buff, "dst") == 0) 
-	return tDST;
-
-    for (tp = UnitsTable; tp->name; tp++)
-	if (strcmp(buff, tp->name) == 0) {
-	    yylval.Number = tp->value;
-	    return tp->type;
-	}
-
-    /* Strip off any plural and try the units table again. */
-    i = strlen(buff) - 1;
-    if (buff[i] == 's') {
-	buff[i] = '\0';
-	for (tp = UnitsTable; tp->name; tp++)
-	    if (strcmp(buff, tp->name) == 0) {
-		yylval.Number = tp->value;
-		return tp->type;
-	    }
-	buff[i] = 's';		/* Put back for "this" in OtherTable. */
-    }
-
-    for (tp = OtherTable; tp->name; tp++)
-	if (strcmp(buff, tp->name) == 0) {
-	    yylval.Number = tp->value;
-	    return tp->type;
-	}
-
-    for (tp = OrdinalTable; tp->name; tp++)
-    {
-        if (strcmp(buff, tp->name) == 0) {
-            yylval.Number = tp->value;
-            return tp->type;
-        }
-    }
-
-    /* Military timezones. */
-    if (buff[1] == '\0' && isalpha(*buff)) {
-	for (tp = MilitaryTable; tp->name; tp++)
-	    if (strcmp(buff, tp->name) == 0) {
-		yylval.Number = tp->value;
-		return tp->type;
-	    }
-    }
-
-    /* Drop out any periods and try the timezone table again. */
-    for (i = 0, p = q = buff; *q; q++)
-	if (*q != '.')
-	    *p++ = *q;
-	else
-	    i++;
-    *p = '\0';
-    if (i)
-	for (tp = TimezoneTable; tp->name; tp++)
-	    if (strcmp(buff, tp->name) == 0) {
-		yylval.Number = tp->value;
-		return tp->type;
-	    }
-
-    return tID;
-}
 
 
-static int
-yylex()
-{
-    register char	c;
-    register char	*p;
-    char		buff[20];
-    int			Count;
-    int			sign;
-
-    for ( ; ; ) {
-	while (isspace(*yyInput))
-	    yyInput++;
-
-	if (isdigit(c = *yyInput) || c == '-' || c == '+') {
-	    if (c == '-' || c == '+') {
-		sign = c == '-' ? -1 : 1;
-		if (!isdigit(*++yyInput))
-		    /* skip the '-' sign */
-		    continue;
-	    }
-	    else
-		sign = 0;
-	    for (yylval.Number = 0; isdigit(c = *yyInput++); )
-		yylval.Number = 10 * yylval.Number + c - '0';
-	    yyInput--;
-	    if (sign < 0)
-		yylval.Number = -yylval.Number;
-	    return sign ? tSNUMBER : tUNUMBER;
-	}
-	if (isalpha(c)) {
-	    for (p = buff; isalpha(c = *yyInput++) || c == '.'; )
-		if (p < &buff[sizeof buff - 1])
-		    *p++ = c;
-	    *p = '\0';
-	    yyInput--;
-	    return LookupWord(buff);
-	}
-	if (c != '(')
-	    return *yyInput++;
-	Count = 0;
-	do {
-	    c = *yyInput++;
-	    if (c == '\0')
-		return c;
-	    if (c == '(')
-		Count++;
-	    else if (c == ')')
-		Count--;
-	} while (Count > 0);
-    }
-}
+/* yylex() has been moved to an external file */
 
 #define TM_YEAR_ORIGIN 1900
 
