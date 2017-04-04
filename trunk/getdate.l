@@ -1,3 +1,9 @@
+%top {
+// break the cyclic dependency between scanner and parser headers
+typedef union YYSTYPE YYSTYPE;
+typedef struct YYLTYPE YYLTYPE;
+}
+
 %{
 
 #include <stdio.h>
@@ -8,9 +14,17 @@
 
 DIGIT [0-9]
 
-%option 8bit bison-bridge 
-%option warn
+%option noyywrap
+/* %option prefix="demo2" */
+%option reentrant
+%option nounput
+%option warn 
+/* %option nodefault */
+%option stack
+%option bison-bridge bison-locations
+
 %option yylineno
+%x STRING_ESCAPE
 
 %%
 
@@ -45,6 +59,7 @@ oct|october		|
 nov|november		|
 dec|december		{
                   printf("month name: %s\n", yytext);
+//                  yylval = 
                   return tMONTH;
                 }
 
@@ -54,6 +69,7 @@ dec|december		{
                 }
 %%
 
+/*
 int main(int argc, char **argv)
 {
   printf("foo!\n");
@@ -67,3 +83,4 @@ int main(int argc, char **argv)
   return 0;
   
 }
+*/
