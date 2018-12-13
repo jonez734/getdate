@@ -2,4 +2,4 @@
 
 import _getdate
 
-print _getdate.getdate("2 wednesday june 2012")
+print _getdate.getdate("third wednesday june 2012 6:00pm")

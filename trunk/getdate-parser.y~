@@ -48,7 +48,7 @@ static int yyerror (char *);
 %code requires {
     #include <sys/types.h>
     #include <sys/timeb.h>
-    #include "getdate-timezones.h"
+
     /*
     **  Daylight-savings mode:  on, off, or not yet known.
     */

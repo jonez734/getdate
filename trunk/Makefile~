@@ -50,7 +50,7 @@ distclean: clean
 %.so:
 	${CC} ${LDFLAGS} $^ ${LDLIBS} -o $@
 
-libgetdate.so: getdate-parser.o getdate-lexer-original.o getdate-timezones.o pygetdate.o
+libgetdate.so: getdate-parser.o getdate-lexer-original.o pygetdate.o
 getdate-lexer-original.o: getdate-lexer-original.c getdate-parser.h
 
 lex.yy.c: getdate.l

@@ -1,0 +1,3 @@
+- see http://php.net/manual/en/datetime.formats.relative.php
+
+- http://stackoverflow.com/questions/7134137/sql-nth-day-of-nth-week-of-a-month

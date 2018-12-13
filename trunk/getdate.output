@@ -1,0 +1,764 @@
+Terminals unused in grammar
+
+   tID
+
+
+State 10 conflicts: 6 shift/reduce
+State 31 conflicts: 2 shift/reduce
+State 46 conflicts: 1 shift/reduce
+State 58 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: spec $end
+
+    1 spec: /* empty */
+    2     | spec item
+
+    3 item: time
+    4     | zone
+    5     | date
+    6     | day
+    7     | rel
+    8     | cvsstamp
+    9     | ordinaldate
+   10     | number
+
+   11 ordinaldate: tORDINAL tDAY tMONTH tUNUMBER
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+
+   13 time: tUNUMBER tMERIDIAN
+   14     | tUNUMBER ':' tUNUMBER o_merid
+   15     | tUNUMBER ':' tUNUMBER tSNUMBER
+   16     | tUNUMBER ':' tUNUMBER ':' tUNUMBER o_merid
+   17     | tUNUMBER ':' tUNUMBER ':' tUNUMBER tSNUMBER
+
+   18 zone: tZONE
+   19     | tDAYZONE
+   20     | tZONE tDST
+
+   21 day: tDAY
+   22    | tDAY ','
+   23    | tUNUMBER tDAY
+
+   24 date: tUNUMBER '/' tUNUMBER
+   25     | tUNUMBER '/' tUNUMBER '/' tUNUMBER
+   26     | tUNUMBER tSNUMBER tSNUMBER
+   27     | tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   28     | tUNUMBER tMONTH tSNUMBER
+   29     | tMONTH tUNUMBER
+   30     | tMONTH tUNUMBER ',' tUNUMBER
+   31     | tUNUMBER tMONTH
+   32     | tUNUMBER tMONTH tUNUMBER
+
+   33 rel: relunit tAGO
+   34    | relunit
+
+   35 relunit: tUNUMBER tMINUTE_UNIT
+   36        | tSNUMBER tMINUTE_UNIT
+   37        | tMINUTE_UNIT
+   38        | tSNUMBER tSEC_UNIT
+   39        | tUNUMBER tSEC_UNIT
+   40        | tSEC_UNIT
+   41        | tSNUMBER tMONTH_UNIT
+   42        | tUNUMBER tMONTH_UNIT
+   43        | tMONTH_UNIT
+
+   44 number: tUNUMBER
+
+   45 o_merid: /* empty */
+   46        | tMERIDIAN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+',' (44) 22 30
+'.' (46) 12 27
+'/' (47) 24 25
+':' (58) 14 15 16 17
+error (256)
+tAGO (258) 33
+tDAY (259) 11 21 22 23
+tDAYZONE (260) 19
+tID (261)
+tMERIDIAN (262) 13 46
+tMINUTE_UNIT (263) 35 36 37
+tMONTH (264) 11 28 29 30 31 32
+tMONTH_UNIT (265) 41 42 43
+tSEC_UNIT (266) 38 39 40
+tSNUMBER (267) 15 17 26 28 36 38 41
+tUNUMBER (268) 11 12 13 14 15 16 17 23 24 25 26 27 28 29 30 31 32 35
+    39 42 44
+tZONE (269) 18 20
+tDST (270) 20
+tORDINAL (271) 11
+
+
+Nonterminals, with rules where they appear
+
+$accept (21)
+    on left: 0
+spec (22)
+    on left: 1 2, on right: 0 2
+item (23)
+    on left: 3 4 5 6 7 8 9 10, on right: 2
+ordinaldate (24)
+    on left: 11, on right: 9
+cvsstamp (25)
+    on left: 12, on right: 8
+time (26)
+    on left: 13 14 15 16 17, on right: 3
+zone (27)
+    on left: 18 19 20, on right: 4
+day (28)
+    on left: 21 22 23, on right: 6
+date (29)
+    on left: 24 25 26 27 28 29 30 31 32, on right: 5
+rel (30)
+    on left: 33 34, on right: 7
+relunit (31)
+    on left: 35 36 37 38 39 40 41 42 43, on right: 33 34
+number (32)
+    on left: 44, on right: 10
+o_merid (33)
+    on left: 45 46, on right: 14 16
+
+
+State 0
+
+    0 $accept: . spec $end
+    1 spec: .
+    2     | . spec item
+
+    $default  reduce using rule 1 (spec)
+
+    spec  go to state 1
+
+
+State 1
+
+    0 $accept: spec . $end
+    2 spec: spec . item
+    3 item: . time
+    4     | . zone
+    5     | . date
+    6     | . day
+    7     | . rel
+    8     | . cvsstamp
+    9     | . ordinaldate
+   10     | . number
+   11 ordinaldate: . tORDINAL tDAY tMONTH tUNUMBER
+   12 cvsstamp: . tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   13 time: . tUNUMBER tMERIDIAN
+   14     | . tUNUMBER ':' tUNUMBER o_merid
+   15     | . tUNUMBER ':' tUNUMBER tSNUMBER
+   16     | . tUNUMBER ':' tUNUMBER ':' tUNUMBER o_merid
+   17     | . tUNUMBER ':' tUNUMBER ':' tUNUMBER tSNUMBER
+   18 zone: . tZONE
+   19     | . tDAYZONE
+   20     | . tZONE tDST
+   21 day: . tDAY
+   22    | . tDAY ','
+   23    | . tUNUMBER tDAY
+   24 date: . tUNUMBER '/' tUNUMBER
+   25     | . tUNUMBER '/' tUNUMBER '/' tUNUMBER
+   26     | . tUNUMBER tSNUMBER tSNUMBER
+   27     | . tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   28     | . tUNUMBER tMONTH tSNUMBER
+   29     | . tMONTH tUNUMBER
+   30     | . tMONTH tUNUMBER ',' tUNUMBER
+   31     | . tUNUMBER tMONTH
+   32     | . tUNUMBER tMONTH tUNUMBER
+   33 rel: . relunit tAGO
+   34    | . relunit
+   35 relunit: . tUNUMBER tMINUTE_UNIT
+   36        | . tSNUMBER tMINUTE_UNIT
+   37        | . tMINUTE_UNIT
+   38        | . tSNUMBER tSEC_UNIT
+   39        | . tUNUMBER tSEC_UNIT
+   40        | . tSEC_UNIT
+   41        | . tSNUMBER tMONTH_UNIT
+   42        | . tUNUMBER tMONTH_UNIT
+   43        | . tMONTH_UNIT
+   44 number: . tUNUMBER
+
+    $end          shift, and go to state 2
+    tDAY          shift, and go to state 3
+    tDAYZONE      shift, and go to state 4
+    tMINUTE_UNIT  shift, and go to state 5
+    tMONTH        shift, and go to state 6
+    tMONTH_UNIT   shift, and go to state 7
+    tSEC_UNIT     shift, and go to state 8
+    tSNUMBER      shift, and go to state 9
+    tUNUMBER      shift, and go to state 10
+    tZONE         shift, and go to state 11
+    tORDINAL      shift, and go to state 12
+
+    item         go to state 13
+    ordinaldate  go to state 14
+    cvsstamp     go to state 15
+    time         go to state 16
+    zone         go to state 17
+    day          go to state 18
+    date         go to state 19
+    rel          go to state 20
+    relunit      go to state 21
+    number       go to state 22
+
+
+State 2
+
+    0 $accept: spec $end .
+
+    $default  accept
+
+
+State 3
+
+   21 day: tDAY .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   22    | tDAY . ','
+
+    ','  shift, and go to state 23
+
+    $default  reduce using rule 21 (day)
+
+
+State 4
+
+   19 zone: tDAYZONE .
+
+    $default  reduce using rule 19 (zone)
+
+
+State 5
+
+   37 relunit: tMINUTE_UNIT .
+
+    $default  reduce using rule 37 (relunit)
+
+
+State 6
+
+   29 date: tMONTH . tUNUMBER
+   30     | tMONTH . tUNUMBER ',' tUNUMBER
+
+    tUNUMBER  shift, and go to state 24
+
+
+State 7
+
+   43 relunit: tMONTH_UNIT .
+
+    $default  reduce using rule 43 (relunit)
+
+
+State 8
+
+   40 relunit: tSEC_UNIT .
+
+    $default  reduce using rule 40 (relunit)
+
+
+State 9
+
+   36 relunit: tSNUMBER . tMINUTE_UNIT
+   38        | tSNUMBER . tSEC_UNIT
+   41        | tSNUMBER . tMONTH_UNIT
+
+    tMINUTE_UNIT  shift, and go to state 25
+    tMONTH_UNIT   shift, and go to state 26
+    tSEC_UNIT     shift, and go to state 27
+
+
+State 10
+
+   12 cvsstamp: tUNUMBER . '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   13 time: tUNUMBER . tMERIDIAN
+   14     | tUNUMBER . ':' tUNUMBER o_merid
+   15     | tUNUMBER . ':' tUNUMBER tSNUMBER
+   16     | tUNUMBER . ':' tUNUMBER ':' tUNUMBER o_merid
+   17     | tUNUMBER . ':' tUNUMBER ':' tUNUMBER tSNUMBER
+   23 day: tUNUMBER . tDAY
+   24 date: tUNUMBER . '/' tUNUMBER
+   25     | tUNUMBER . '/' tUNUMBER '/' tUNUMBER
+   26     | tUNUMBER . tSNUMBER tSNUMBER
+   27     | tUNUMBER . '.' tUNUMBER '.' tUNUMBER
+   28     | tUNUMBER . tMONTH tSNUMBER
+   31     | tUNUMBER . tMONTH
+   32     | tUNUMBER . tMONTH tUNUMBER
+   35 relunit: tUNUMBER . tMINUTE_UNIT
+   39        | tUNUMBER . tSEC_UNIT
+   42        | tUNUMBER . tMONTH_UNIT
+   44 number: tUNUMBER .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+
+    tDAY          shift, and go to state 28
+    tMERIDIAN     shift, and go to state 29
+    tMINUTE_UNIT  shift, and go to state 30
+    tMONTH        shift, and go to state 31
+    tMONTH_UNIT   shift, and go to state 32
+    tSEC_UNIT     shift, and go to state 33
+    tSNUMBER      shift, and go to state 34
+    '.'           shift, and go to state 35
+    ':'           shift, and go to state 36
+    '/'           shift, and go to state 37
+
+    tDAY          [reduce using rule 44 (number)]
+    tMINUTE_UNIT  [reduce using rule 44 (number)]
+    tMONTH        [reduce using rule 44 (number)]
+    tMONTH_UNIT   [reduce using rule 44 (number)]
+    tSEC_UNIT     [reduce using rule 44 (number)]
+    tSNUMBER      [reduce using rule 44 (number)]
+    $default      reduce using rule 44 (number)
+
+
+State 11
+
+   18 zone: tZONE .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   20     | tZONE . tDST
+
+    tDST  shift, and go to state 38
+
+    $default  reduce using rule 18 (zone)
+
+
+State 12
+
+   11 ordinaldate: tORDINAL . tDAY tMONTH tUNUMBER
+
+    tDAY  shift, and go to state 39
+
+
+State 13
+
+    2 spec: spec item .
+
+    $default  reduce using rule 2 (spec)
+
+
+State 14
+
+    9 item: ordinaldate .
+
+    $default  reduce using rule 9 (item)
+
+
+State 15
+
+    8 item: cvsstamp .
+
+    $default  reduce using rule 8 (item)
+
+
+State 16
+
+    3 item: time .
+
+    $default  reduce using rule 3 (item)
+
+
+State 17
+
+    4 item: zone .
+
+    $default  reduce using rule 4 (item)
+
+
+State 18
+
+    6 item: day .
+
+    $default  reduce using rule 6 (item)
+
+
+State 19
+
+    5 item: date .
+
+    $default  reduce using rule 5 (item)
+
+
+State 20
+
+    7 item: rel .
+
+    $default  reduce using rule 7 (item)
+
+
+State 21
+
+   33 rel: relunit . tAGO
+   34    | relunit .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+
+    tAGO  shift, and go to state 40
+
+    $default  reduce using rule 34 (rel)
+
+
+State 22
+
+   10 item: number .
+
+    $default  reduce using rule 10 (item)
+
+
+State 23
+
+   22 day: tDAY ',' .
+
+    $default  reduce using rule 22 (day)
+
+
+State 24
+
+   29 date: tMONTH tUNUMBER .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   30     | tMONTH tUNUMBER . ',' tUNUMBER
+
+    ','  shift, and go to state 41
+
+    $default  reduce using rule 29 (date)
+
+
+State 25
+
+   36 relunit: tSNUMBER tMINUTE_UNIT .
+
+    $default  reduce using rule 36 (relunit)
+
+
+State 26
+
+   41 relunit: tSNUMBER tMONTH_UNIT .
+
+    $default  reduce using rule 41 (relunit)
+
+
+State 27
+
+   38 relunit: tSNUMBER tSEC_UNIT .
+
+    $default  reduce using rule 38 (relunit)
+
+
+State 28
+
+   23 day: tUNUMBER tDAY .
+
+    $default  reduce using rule 23 (day)
+
+
+State 29
+
+   13 time: tUNUMBER tMERIDIAN .
+
+    $default  reduce using rule 13 (time)
+
+
+State 30
+
+   35 relunit: tUNUMBER tMINUTE_UNIT .
+
+    $default  reduce using rule 35 (relunit)
+
+
+State 31
+
+   28 date: tUNUMBER tMONTH . tSNUMBER
+   31     | tUNUMBER tMONTH .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   32     | tUNUMBER tMONTH . tUNUMBER
+
+    tSNUMBER  shift, and go to state 42
+    tUNUMBER  shift, and go to state 43
+
+    tSNUMBER  [reduce using rule 31 (date)]
+    tUNUMBER  [reduce using rule 31 (date)]
+    $default  reduce using rule 31 (date)
+
+
+State 32
+
+   42 relunit: tUNUMBER tMONTH_UNIT .
+
+    $default  reduce using rule 42 (relunit)
+
+
+State 33
+
+   39 relunit: tUNUMBER tSEC_UNIT .
+
+    $default  reduce using rule 39 (relunit)
+
+
+State 34
+
+   26 date: tUNUMBER tSNUMBER . tSNUMBER
+
+    tSNUMBER  shift, and go to state 44
+
+
+State 35
+
+   12 cvsstamp: tUNUMBER '.' . tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   27 date: tUNUMBER '.' . tUNUMBER '.' tUNUMBER
+
+    tUNUMBER  shift, and go to state 45
+
+
+State 36
+
+   14 time: tUNUMBER ':' . tUNUMBER o_merid
+   15     | tUNUMBER ':' . tUNUMBER tSNUMBER
+   16     | tUNUMBER ':' . tUNUMBER ':' tUNUMBER o_merid
+   17     | tUNUMBER ':' . tUNUMBER ':' tUNUMBER tSNUMBER
+
+    tUNUMBER  shift, and go to state 46
+
+
+State 37
+
+   24 date: tUNUMBER '/' . tUNUMBER
+   25     | tUNUMBER '/' . tUNUMBER '/' tUNUMBER
+
+    tUNUMBER  shift, and go to state 47
+
+
+State 38
+
+   20 zone: tZONE tDST .
+
+    $default  reduce using rule 20 (zone)
+
+
+State 39
+
+   11 ordinaldate: tORDINAL tDAY . tMONTH tUNUMBER
+
+    tMONTH  shift, and go to state 48
+
+
+State 40
+
+   33 rel: relunit tAGO .
+
+    $default  reduce using rule 33 (rel)
+
+
+State 41
+
+   30 date: tMONTH tUNUMBER ',' . tUNUMBER
+
+    tUNUMBER  shift, and go to state 49
+
+
+State 42
+
+   28 date: tUNUMBER tMONTH tSNUMBER .
+
+    $default  reduce using rule 28 (date)
+
+
+State 43
+
+   32 date: tUNUMBER tMONTH tUNUMBER .
+
+    $default  reduce using rule 32 (date)
+
+
+State 44
+
+   26 date: tUNUMBER tSNUMBER tSNUMBER .
+
+    $default  reduce using rule 26 (date)
+
+
+State 45
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER . '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   27 date: tUNUMBER '.' tUNUMBER . '.' tUNUMBER
+
+    '.'  shift, and go to state 50
+
+
+State 46
+
+   14 time: tUNUMBER ':' tUNUMBER . o_merid
+   15     | tUNUMBER ':' tUNUMBER . tSNUMBER
+   16     | tUNUMBER ':' tUNUMBER . ':' tUNUMBER o_merid
+   17     | tUNUMBER ':' tUNUMBER . ':' tUNUMBER tSNUMBER
+   45 o_merid: .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   46        | . tMERIDIAN
+
+    tMERIDIAN  shift, and go to state 51
+    tSNUMBER   shift, and go to state 52
+    ':'        shift, and go to state 53
+
+    tSNUMBER  [reduce using rule 45 (o_merid)]
+    $default  reduce using rule 45 (o_merid)
+
+    o_merid  go to state 54
+
+
+State 47
+
+   24 date: tUNUMBER '/' tUNUMBER .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   25     | tUNUMBER '/' tUNUMBER . '/' tUNUMBER
+
+    '/'  shift, and go to state 55
+
+    $default  reduce using rule 24 (date)
+
+
+State 48
+
+   11 ordinaldate: tORDINAL tDAY tMONTH . tUNUMBER
+
+    tUNUMBER  shift, and go to state 56
+
+
+State 49
+
+   30 date: tMONTH tUNUMBER ',' tUNUMBER .
+
+    $default  reduce using rule 30 (date)
+
+
+State 50
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' . tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   27 date: tUNUMBER '.' tUNUMBER '.' . tUNUMBER
+
+    tUNUMBER  shift, and go to state 57
+
+
+State 51
+
+   46 o_merid: tMERIDIAN .
+
+    $default  reduce using rule 46 (o_merid)
+
+
+State 52
+
+   15 time: tUNUMBER ':' tUNUMBER tSNUMBER .
+
+    $default  reduce using rule 15 (time)
+
+
+State 53
+
+   16 time: tUNUMBER ':' tUNUMBER ':' . tUNUMBER o_merid
+   17     | tUNUMBER ':' tUNUMBER ':' . tUNUMBER tSNUMBER
+
+    tUNUMBER  shift, and go to state 58
+
+
+State 54
+
+   14 time: tUNUMBER ':' tUNUMBER o_merid .
+
+    $default  reduce using rule 14 (time)
+
+
+State 55
+
+   25 date: tUNUMBER '/' tUNUMBER '/' . tUNUMBER
+
+    tUNUMBER  shift, and go to state 59
+
+
+State 56
+
+   11 ordinaldate: tORDINAL tDAY tMONTH tUNUMBER .
+
+    $default  reduce using rule 11 (ordinaldate)
+
+
+State 57
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER . '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER
+   27 date: tUNUMBER '.' tUNUMBER '.' tUNUMBER .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+
+    '.'  shift, and go to state 60
+
+    $default  reduce using rule 27 (date)
+
+
+State 58
+
+   16 time: tUNUMBER ':' tUNUMBER ':' tUNUMBER . o_merid
+   17     | tUNUMBER ':' tUNUMBER ':' tUNUMBER . tSNUMBER
+   45 o_merid: .  [$end, tDAY, tDAYZONE, tMINUTE_UNIT, tMONTH, tMONTH_UNIT, tSEC_UNIT, tSNUMBER, tUNUMBER, tZONE, tORDINAL]
+   46        | . tMERIDIAN
+
+    tMERIDIAN  shift, and go to state 51
+    tSNUMBER   shift, and go to state 61
+
+    tSNUMBER  [reduce using rule 45 (o_merid)]
+    $default  reduce using rule 45 (o_merid)
+
+    o_merid  go to state 62
+
+
+State 59
+
+   25 date: tUNUMBER '/' tUNUMBER '/' tUNUMBER .
+
+    $default  reduce using rule 25 (date)
+
+
+State 60
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' . tUNUMBER '.' tUNUMBER '.' tUNUMBER
+
+    tUNUMBER  shift, and go to state 63
+
+
+State 61
+
+   17 time: tUNUMBER ':' tUNUMBER ':' tUNUMBER tSNUMBER .
+
+    $default  reduce using rule 17 (time)
+
+
+State 62
+
+   16 time: tUNUMBER ':' tUNUMBER ':' tUNUMBER o_merid .
+
+    $default  reduce using rule 16 (time)
+
+
+State 63
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER . '.' tUNUMBER '.' tUNUMBER
+
+    '.'  shift, and go to state 64
+
+
+State 64
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' . tUNUMBER '.' tUNUMBER
+
+    tUNUMBER  shift, and go to state 65
+
+
+State 65
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER . '.' tUNUMBER
+
+    '.'  shift, and go to state 66
+
+
+State 66
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' . tUNUMBER
+
+    tUNUMBER  shift, and go to state 67
+
+
+State 67
+
+   12 cvsstamp: tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER '.' tUNUMBER .
+
+    $default  reduce using rule 12 (cvsstamp)

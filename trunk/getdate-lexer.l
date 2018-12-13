@@ -1,21 +1,20 @@
 %top {
 // break the cyclic dependency between scanner and parser headers
-typedef union YYSTYPE YYSTYPE;
-typedef struct YYLTYPE YYLTYPE;
+  typedef union YYSTYPE YYSTYPE;
+  typedef struct YYLTYPE YYLTYPE;
 }
 
 %{
 
 #include <stdio.h>
-#include "getdate.h"
-#include "getdate.tab.h"
+#include "getdate-parser.h"
 
 %}
 
 DIGIT [0-9]
 
 %option noyywrap
-/* %option prefix="demo2" */
+%option prefix="getdate_yy"
 %option reentrant
 %option nounput
 %option warn 
@@ -24,7 +23,7 @@ DIGIT [0-9]
 %option bison-bridge bison-locations
 
 %option yylineno
-%x STRING_ESCAPE
+/* %x STRING_ESCAPE */
 
 %%
 

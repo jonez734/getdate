@@ -6,7 +6,7 @@ from distutils.core import setup, Extension
 v = time.strftime("%Y%m%d%H%M")
 projectname = "getdate"
 
-#module1 = Extension("libgetdate") #, sources=["getdate.tab.c", "getdate.c"])
+module1 = Extension("libgetdate") #, sources=["getdate.tab.c", "getdate.c"])
 
 setup(
   name=projectname,
