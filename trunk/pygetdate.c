@@ -2,7 +2,7 @@
 #include "xtime.h"
 
 static PyObject *ErrorObject;
-extern time_t get_date(char *, struct timeb *);
+extern time_t interpretdateexpression(char *, struct timeb *);
 
 /* ----------------------------------------------------- */
 
@@ -21,7 +21,7 @@ getdate_getdate(PyObject *self /* Not used */, PyObject *args)
     {
     	return NULL;
     }
-    result = get_date(buf, NULL);
+    result = interpretdateexpression(buf, NULL);
     if (result == -1)
     {
     	PyErr_SetString(ErrorObject, "invalid time expression");
@@ -43,7 +43,7 @@ static PyMethodDef getdate_methods[] = {
 
 /*
 static char getdate_module_documentation[] = 
-"documentation to be written"
+"based on a lexer and a parser from the CVS source code in roughly 1997."
 ;
 */
 PyMODINIT_FUNC
@@ -59,7 +59,6 @@ initlibgetdate(void)
 	{
 		return;
 	}
-	
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);

@@ -40,7 +40,7 @@ static int yyerror (char *);
 
 %}
 
-/* The code at the top of get_date which figures out the offset of the
+/* The code at the top of interpretdateexpression which figures out the offset of the
    current time zone checks various CPP symbols to see if special
    tricks are need, but defaults to using the gettimeofday system call.
    Include <sys/time.h> if that will be used.  */
@@ -94,7 +94,7 @@ static int yyerror (char *);
 %code provides {
     int getdate_yylex (YYSTYPE *yylval);
     __attribute__((visibility("default")))
-    time_t get_date(char *, struct timeb *);
+    time_t interpretdateexpression(char *, struct timeb *);
 }
 
 %expect 10
@@ -594,7 +594,7 @@ difftm (a, b)
 }
 
 time_t
-get_date(p, now)
+interpretdateexpression(p, now)
     char		*p;
     struct timeb	*now;
 {
@@ -706,7 +706,7 @@ main(ac, av)
     (void)printf("Enter date, or blank line to exit.\n\t> ");
     (void)fflush(stdout);
     while (gets(buff) && buff[0]) {
-	d = get_date(buff, (struct timeb *)NULL);
+	d = interpretdateexpression(buff, (struct timeb *)NULL);
 	if (d == -1)
 	    (void)printf("Bad format - couldn't convert.\n");
 	else
