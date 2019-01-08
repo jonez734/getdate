@@ -12,8 +12,8 @@ setup(
   name=projectname,
   version=v,
   url="http://projects.zoidtechnologies.com/%s/" % (projectname),
-  author="Zoid Technologies",
+  author="zoid technologies",
   author_email="%s@projects.zoidtechnologies.com" % (projectname),
   py_modules=["getdate",],
-  ext_modules=["libgetdate",] # module1,]
+  ext_modules=[Extension("libgetdate", ["pygetdate.c"])] # module1,]
 )
