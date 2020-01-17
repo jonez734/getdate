@@ -15,5 +15,5 @@ setup(
   author="zoid technologies",
   author_email="%s@projects.zoidtechnologies.com" % (projectname),
   py_modules=["getdate",],
-  ext_modules=[Extension("libgetdate", ["pygetdate.c"])] # module1,]
+  ext_modules=[Extension("libgetdate", ["pygetdate.c", "getdate-parser.c", "getdate-lexer-original.c", "getdate-timezones.c"])] # module1,]
 )
