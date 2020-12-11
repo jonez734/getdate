@@ -2,8 +2,11 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <string.h>
+#include <sys/timeb.h>
 
 #define HOUR(x)		((time_t)(x) * 60)
+
+extern char *yyInput;
 
 /*
 **  An entry in the lexical lookup table.
@@ -34,7 +37,9 @@ static TABLE const MonthDayTable[] = {
     { "november",	tMONTH, 11 },
     { "december",	tMONTH, 12 },
     { "sunday",		tDAY, 0 },
+    { "sun",		tDAY, 0 },
     { "monday",		tDAY, 1 },
+    { "mon",		tDAY, 1 },
     { "tuesday",	tDAY, 2 },
     { "tues",		tDAY, 2 },
     { "wednesday",	tDAY, 3 },
@@ -91,13 +96,14 @@ static TABLE const OtherTable[] = {
     { "eleventh",	tUNUMBER,	11 },
     { "twelfth",	tUNUMBER,	12 },
     { "ago",		tAGO,	1 },
+    { "final",		tFINAL, 1 },
     { NULL }
 };
 
 /* timezone tables moved to getdate-timezones.c */
 
 static int
-LookupWord(YYSTYPE *yylval, char *buff)
+LookupWord(GETDATE_YYSTYPE *yylval, char *buff)
 {
     register char	*p;
     register char	*q;
@@ -202,7 +208,7 @@ LookupWord(YYSTYPE *yylval, char *buff)
 }
 
 int
-getdate_yylex(YYSTYPE *yylval)
+getdate_yylex(GETDATE_YYSTYPE *yylval)
 {
     register char	c;
     register char	*p;
@@ -212,9 +218,18 @@ getdate_yylex(YYSTYPE *yylval)
 
     for ( ; ; ) {
 	while (isspace(*yyInput))
+	{
 	    yyInput++;
+        }
 
-	if (isdigit(c = *yyInput) || c == '-' || c == '+') {
+        c = *yyInput;
+
+/*
+        if (c == '-') {
+            return tDASH;
+        }
+*/
+	if (isdigit(c) || c == '-' || c == '+') {
 	    if (c == '-' || c == '+') {
 		sign = c == '-' ? -1 : 1;
 		if (!isdigit(*++yyInput))
