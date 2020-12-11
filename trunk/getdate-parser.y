@@ -1,6 +1,6 @@
 %define api.pure full
-%name-prefix "getdate_yy"
-
+/*# %name-prefix "getdate_yy"*/
+%define api.prefix {getdate_yy}
 %{
 
 /*
@@ -31,7 +31,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-
 static int yyerror (char *);
 
 #define EPOCH		1970
@@ -40,15 +39,17 @@ static int yyerror (char *);
 
 %}
 
-/* The code at the top of interpretdateexpression which figures out the offset of the
+/* The code at the top of parse which figures out the offset of the
    current time zone checks various CPP symbols to see if special
    tricks are need, but defaults to using the gettimeofday system call.
    Include <sys/time.h> if that will be used.  */
 
+
 %code requires {
     #include <sys/types.h>
-    #include <sys/timeb.h>
+    #include <sys/timeb.h> 
     #include "getdate-timezones.h"
+    #include "getdate-parser.h"
     /*
     **  Daylight-savings mode:  on, off, or not yet known.
     */
@@ -63,41 +64,44 @@ static int yyerror (char *);
         MERam, MERpm, MER24
     } MERIDIAN;
 
+}
+
+%code {
     /*
     **  Global variables.  We could get rid of most of these by using a good
     **  union as the yacc stack.  (This routine was originally written before
     **  yacc had the %union construct.)  Maybe someday; right now we only use
     **  the %union very rarely.
     */
-     char	*yyInput;
-     DSTMODE	yyDSTmode;
-     time_t	yyDayOrdinal;
-     time_t	yyDayNumber;
-     int	yyHaveDate;
-     int	yyHaveDay;
-     int	yyHaveRel;
-     int	yyHaveTime;
-     int	yyHaveZone;
-     int	yyOrdinal;
-     time_t	yyTimezone;
-     time_t	yyDay;
-     time_t	yyHour;
-     time_t	yyMinutes;
-     time_t	yyMonth;
-     time_t	yySeconds;
-     time_t	yyYear;
-     MERIDIAN yyMeridian;
-     time_t	yyRelMonth;
-     time_t	yyRelSeconds;
+      char	*yyInput;
+           DSTMODE	yyDSTmode;
+           time_t	yyDayOrdinal;
+           time_t	yyDayNumber;
+           int	yyHaveDate;
+           int	yyHaveDay;
+           int	yyHaveRel;
+           int	yyHaveTime;
+           int	yyHaveZone;
+           int	yyOrdinal;
+           time_t	yyTimezone;
+           time_t	yyDay;
+           time_t	yyHour;
+           time_t	yyMinutes;
+           time_t	yyMonth;
+           time_t	yySeconds;
+           time_t	yyYear;
+           MERIDIAN yyMeridian;
+           time_t	yyRelMonth;
+           time_t	yyRelSeconds;
 }
 
 %code provides {
-    int getdate_yylex (YYSTYPE *yylval);
+    int getdate_yylex (GETDATE_YYSTYPE *yylval);
     __attribute__((visibility("default")))
-    time_t interpretdateexpression(char *, struct timeb *);
+    time_t parse(char *, struct timeb *);
 }
 
-%expect 10
+/* %expect 10*/
 
 // #include "getdate.h"
 
@@ -158,13 +162,14 @@ typedef enum _DSTMODE {
 %token	tAGO tDAY tDAYZONE tID tMERIDIAN tMINUTE_UNIT tMONTH tMONTH_UNIT
 %token	tSEC_UNIT tSNUMBER tUNUMBER tZONE tDST
 %token  tORDINAL
-
+%token  tFINAL
+%token  tDASH
 %type	<Number>	tDAY tDAYZONE tMINUTE_UNIT tMONTH tMONTH_UNIT tORDINAL
 %type	<Number>	tSEC_UNIT tSNUMBER tUNUMBER tZONE
 %type	<Meridian>	tMERIDIAN o_merid
 %%
 
-spec	: /* NULL */
+spec	: %empty  /* NULL */
 	| spec item
 	;
 
@@ -298,8 +303,8 @@ date	: tUNUMBER '/' tUNUMBER {
 		yyYear = $5;
 	    }
 	}
-	| tUNUMBER tSNUMBER tSNUMBER {
-	    /* ISO 8601 format.  yyyy-mm-dd.  */
+	/* ISO 8601 format.  yyyy-mm-dd.  */
+	| tSNUMBER tSNUMBER tSNUMBER {
 	    yyYear = $1;
 	    yyMonth = -$2;
 	    yyDay = -$3;
@@ -315,6 +320,12 @@ date	: tUNUMBER '/' tUNUMBER {
 	    yyMonth = $2;
 	    yyYear = -$3;
 	}
+	| tSNUMBER tMONTH tUNUMBER {
+	    /* 2020-jan-16 */
+	    yyYear = -$1;
+	    yyMonth = $2;
+	    yyDay = $3;
+        }
 	| tMONTH tUNUMBER {
 	    yyMonth = $1;
 	    yyDay = $2;
@@ -398,7 +409,7 @@ number	: tUNUMBER {
 	}
 	;
 
-o_merid	: /* NULL */ {
+o_merid	: /* NULL */  %empty {
 	    $$ = MER24;
 	}
 	| tMERIDIAN {
@@ -594,7 +605,7 @@ difftm (a, b)
 }
 
 time_t
-interpretdateexpression(p, now)
+parse(p, now)
     char		*p;
     struct timeb	*now;
 {
@@ -706,7 +717,7 @@ main(ac, av)
     (void)printf("Enter date, or blank line to exit.\n\t> ");
     (void)fflush(stdout);
     while (gets(buff) && buff[0]) {
-	d = interpretdateexpression(buff, (struct timeb *)NULL);
+	d = parse(buff, (struct timeb *)NULL);
 	if (d == -1)
 	    (void)printf("Bad format - couldn't convert.\n");
 	else
